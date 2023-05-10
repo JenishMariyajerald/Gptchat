@@ -25,9 +25,7 @@ const Login: React.FC<{}> = () => {
       console.log(error);
     }
   };
-  // React.useEffect(() => {
-  //   getUser();
-  // }, []);
+
   const initialValues: MyFormValues = {email: '', password: ''};
   const validationSchema = Yup.object().shape({
     email: Yup.string()

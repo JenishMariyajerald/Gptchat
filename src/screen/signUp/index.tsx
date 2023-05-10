@@ -1,12 +1,8 @@
 import * as React from 'react';
-import { View, Text, Button, TouchableOpacity } from 'react-native';
+import { View, Text } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import database from '@react-native-firebase/database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// import { useDispatch } from 'react-redux';
-// import { loginActions } from '../../redux/slice/login/actions';
 import Input from '../../component/common/Input';
 import CustomButton from '../../component/common/Button';
 import { RegisterFormValues } from './types';
@@ -23,16 +19,13 @@ const Signup: React.FC<{}> = () => {
     apikey: '',
   };
   let addUser = async (values: any) => {
-    console.log('val', values);
     try {
       await AsyncStorage.setItem('user', JSON.stringify(values));
       navigation.navigate('Login');
     } catch (error) {
-      console.log(error, 'jjjj');
+      console.log(error);
     }
-    // database().ref('/user').push({
-    //   user: values,
-    // });
+
   };
   const validationSchema = Yup.object().shape({
     name: Yup.string().label('name').required('Enter User Name'),
@@ -47,9 +40,6 @@ const Signup: React.FC<{}> = () => {
     apikey: Yup.string().label('apikey').required('Enter an api key'),
   });
 
-  //   const dispatch = useDispatch();
-  //   const signIn = (request: any) =>
-  //     dispatch({ type: loginActions.LOGIN, payload: request });
   return (
     <Formik
       initialValues={initialValues}
