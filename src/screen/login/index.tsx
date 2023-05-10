@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login: React.FC<{}> = () => {
   const navigation = useNavigation();
+  const [invalidCredential, setInvalidCredential] = React.useState(false);
   const getUser = async (req: any) => {
     try {
       const value = await AsyncStorage.getItem('user');
@@ -19,13 +20,15 @@ const Login: React.FC<{}> = () => {
         console.log(typeof val);
         if (req.email === val.email && req.password === val.password) {
           navigation.navigate('Chat');
+        } else {
+          setInvalidCredential(true);
         }
       }
     } catch (error) {
       console.log(error);
     }
   };
-
+ 
   const initialValues: MyFormValues = {email: '', password: ''};
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -43,7 +46,6 @@ const Login: React.FC<{}> = () => {
       initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={values => {
-        console.log('final', values);
         getUser(values);
       }}>
       {({
@@ -56,9 +58,17 @@ const Login: React.FC<{}> = () => {
         touched,
       }) => (
         <View style={loginStyle.container}>
+          {invalidCredential && (
+            <Text style={{textAlign: 'center', color: 'red'}}>
+              Invalid Credential
+            </Text>
+          )}
           <Input
             placeholder={'UserName'}
-            onChangeText={handleChange('email')}
+            onChangeText={() => {
+              handleChange('email');
+              setInvalidCredential(false);
+            }}
             onBlur={handleBlur('email')}
             value={values.email}
           />
@@ -67,13 +77,17 @@ const Login: React.FC<{}> = () => {
           )}
           <Input
             placeholder={'Password'}
-            onChangeText={handleChange('password')}
+            onChangeText={() => {
+              handleChange('password');
+              setInvalidCredential(false);
+            }}
             onBlur={handleBlur('password')}
             value={values.password}
           />
           {errors.password && touched.password && (
             <Text style={loginStyle.error}>{errors.password}</Text>
           )}
+
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('Signup');
