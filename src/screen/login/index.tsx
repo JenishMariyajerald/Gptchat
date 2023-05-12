@@ -22,13 +22,18 @@ const Login: React.FC<{}> = () => {
           navigation.navigate('Chat');
         } else {
           setInvalidCredential(true);
+          setTimeout(() => {
+            setInvalidCredential(false);
+          }, 3000);
         }
       }
     } catch (error) {
       console.log(error);
     }
   };
- 
+  // React.useEffect(() => {
+  //   getUser();
+  // }, []);
   const initialValues: MyFormValues = {email: '', password: ''};
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -65,10 +70,7 @@ const Login: React.FC<{}> = () => {
           )}
           <Input
             placeholder={'UserName'}
-            onChangeText={() => {
-              handleChange('email');
-              setInvalidCredential(false);
-            }}
+            onChangeText={handleChange('email')}
             onBlur={handleBlur('email')}
             value={values.email}
           />
@@ -77,10 +79,7 @@ const Login: React.FC<{}> = () => {
           )}
           <Input
             placeholder={'Password'}
-            onChangeText={() => {
-              handleChange('password');
-              setInvalidCredential(false);
-            }}
+            onChangeText={handleChange('password')}
             onBlur={handleBlur('password')}
             value={values.password}
           />
