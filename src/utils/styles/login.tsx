@@ -29,5 +29,16 @@ const loginStyle = StyleSheet.create({
     color: 'red',
     marginLeft: 20,
   },
+  createAccount: {
+    textAlign: 'right',
+    color: 'blue',
+  },
+  createContainer: {
+    paddingRight: 20,
+  },
+  invalid: {
+    textAlign: 'center',
+    color: 'red',
+  },
 });
 export default loginStyle;

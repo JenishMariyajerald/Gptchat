@@ -1,18 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  ScrollView,
-} from 'react-native';
-import { Configuration, OpenAIApi } from 'openai';
+import React, {useEffect, useState} from 'react';
+import {View, Text, TextInput, Button, ScrollView} from 'react-native';
+import {Configuration, OpenAIApi} from 'openai';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import chatStyle from './styles';
-import { MessageProps } from './types'
+import {Message} from './types';
+import ChatStyle from '../../utils/styles/chat';
 
-const Chat = () => {
-  const [messages, setMessages] = useState<MessageProps[]>([]);
+const Chat: React.FC<{}> = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [apiKey, setApiKey] = useState('');
   useEffect(() => {
@@ -20,23 +14,23 @@ const Chat = () => {
   }, []);
   const getApiKey = async () => {
     try {
-      const value = await AsyncStorage.getItem('user');
-      if (value !== null) {
-        const val = JSON.parse(value);
-        setApiKey(val.apikey);
+      const apiKeyResponse = await AsyncStorage.getItem('user');
+      if (apiKeyResponse !== null) {
+        const API_KEY = JSON.parse(apiKeyResponse);
+        console.log('APIkey', API_KEY.apikey);
+        setApiKey(API_KEY.apikey);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleSendMessage = async () => {  
-    const prompt = inputText;
-    const config = new Configuration({ apiKey: apiKey });
+  const handleSendMessage = async () => {
+    const config = new Configuration({apiKey: apiKey});
     const openai = new OpenAIApi(config);
     const completetion = {
       model: 'text-davinci-002',
-      prompt: prompt,
+      prompt: inputText,
       max_tokens: 1024,
       temperature: 0.5,
     };
@@ -45,30 +39,31 @@ const Chat = () => {
     const reply = response.data.choices[0].text;
     setMessages((prevMessages: any) => [
       ...prevMessages,
-      { content: inputText, sender: 'user' },
-      { content: reply, sender: 'ai' },
+      {content: inputText, sender: 'user'},
+      {content: reply, sender: 'ai'},
     ]);
     setInputText('');
   };
 
   return (
-    <View style={chatStyle.container}>
-      <ScrollView style={chatStyle.messageContainer}>
+    <View style={ChatStyle.container}>
+      <ScrollView style={ChatStyle.messageContainer}>
         {messages.map(message => (
           <View
             key={message.id}
             style={[
-              chatStyle.messageBubble,
-
-              message.sender === 'user' ? chatStyle.userBubble : chatStyle.botBubble,
+              ChatStyle.messageBubble,
+              message.sender === 'user'
+                ? ChatStyle.userBubble
+                : ChatStyle.botBubble,
             ]}>
-            <Text style={chatStyle.messageText}>{message.content}</Text>
+            <Text style={ChatStyle.messageText}>{message.content}</Text>
           </View>
         ))}
       </ScrollView>
-      <View style={chatStyle.inputContainer}>
+      <View style={ChatStyle.inputContainer}>
         <TextInput
-          style={chatStyle.textInput}
+          style={ChatStyle.textInput}
           value={inputText}
           onChangeText={setInputText}
         />
@@ -77,7 +72,5 @@ const Chat = () => {
     </View>
   );
 };
-
-
 
 export default Chat;

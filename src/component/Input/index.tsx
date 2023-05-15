@@ -1,4 +1,5 @@
-import { TextInput, TextInputProps, StyleSheet } from 'react-native';
+/* eslint-disable react/react-in-jsx-scope */
+import {TextInput, TextInputProps, StyleSheet} from 'react-native';
 const Input = (props: TextInputProps) => {
   return (
     <TextInput

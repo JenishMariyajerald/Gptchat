@@ -1,22 +1,20 @@
 import * as React from 'react';
-import {View, Text, Button, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity} from 'react-native';
 import {Formik} from 'formik';
-import * as Yup from 'yup';
-import Input from '../../component/common/Input';
-import CustomButton from '../../component/common/Button';
-import {MyFormValues} from './types';
-import loginStyle from './styles';
-import {useNavigation} from '@react-navigation/native';
+import Input from '../../component/Input';
+import CustomButton from '../../component/Button';
+import {MyFormValues, LoginProps} from './types';
+import loginStyle from '../../utils/styles/login';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {loginValidationSchema} from '../../utils/validationSchema/index';
 
-const Login: React.FC<{}> = () => {
-  const navigation = useNavigation();
+const Login: React.FC<LoginProps> = ({navigation}) => {
   const [invalidCredential, setInvalidCredential] = React.useState(false);
-  const getUser = async (req: any) => {
+  const validateUser = async (req: any) => {
     try {
-      const value = await AsyncStorage.getItem('user');
-      if (value !== null) {
-        const val = JSON.parse(value);
+      const validCredential = await AsyncStorage.getItem('user');
+      if (validCredential !== null) {
+        const val = JSON.parse(validCredential);
         console.log(typeof val);
         if (req.email === val.email && req.password === val.password) {
           navigation.navigate('Chat');
@@ -31,27 +29,14 @@ const Login: React.FC<{}> = () => {
       console.log(error);
     }
   };
-  // React.useEffect(() => {
-  //   getUser();
-  // }, []);
   const initialValues: MyFormValues = {email: '', password: ''};
-  const validationSchema = Yup.object().shape({
-    email: Yup.string()
-      .label('Email')
-      .email('Enter a valid User Name')
-      .required('Enter User Name'),
-    password: Yup.string()
-      .min(8, ({min}) => `Password must be at least ${min} characters`)
-      .label('password')
-      .required('Enter password'),
-  });
 
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={validationSchema}
+      validationSchema={loginValidationSchema}
       onSubmit={values => {
-        getUser(values);
+        validateUser(values);
       }}>
       {({
         handleChange,
@@ -63,13 +48,8 @@ const Login: React.FC<{}> = () => {
         touched,
       }) => (
         <View style={loginStyle.container}>
-          {invalidCredential && (
-            <Text style={{textAlign: 'center', color: 'red'}}>
-              Invalid Credential
-            </Text>
-          )}
           <Input
-            placeholder={'UserName'}
+            placeholder={'Email'}
             onChangeText={handleChange('email')}
             onBlur={handleBlur('email')}
             value={values.email}
@@ -79,6 +59,7 @@ const Login: React.FC<{}> = () => {
           )}
           <Input
             placeholder={'Password'}
+            secureTextEntry={true}
             onChangeText={handleChange('password')}
             onBlur={handleBlur('password')}
             value={values.password}
@@ -91,23 +72,18 @@ const Login: React.FC<{}> = () => {
             onPress={() => {
               navigation.navigate('Signup');
             }}
-            style={{paddingRight: 20}}>
-            <Text style={{textAlign: 'right', color: 'blue'}}>
-              Don't have an account
-            </Text>
+            style={loginStyle.createContainer}>
+            <Text style={loginStyle.createAccount}>Create an account</Text>
           </TouchableOpacity>
+          {invalidCredential && (
+            <Text style={loginStyle.invalid}>Invalid Credential</Text>
+          )}
           <View style={loginStyle.padding}>
             <CustomButton
               title="Login"
               onPress={handleSubmit}
               disabled={!isValid}
             />
-          </View>
-          <View style={loginStyle.padding}>
-            <Button title="Login with Google" />
-          </View>
-          <View>
-            <Button title="Login with Facebook" />
           </View>
         </View>
       )}

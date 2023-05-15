@@ -1,49 +1,34 @@
 import * as React from 'react';
-import { View, Text } from 'react-native';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
+import {View, Text} from 'react-native';
+import {Formik} from 'formik';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Input from '../../component/common/Input';
-import CustomButton from '../../component/common/Button';
-import { RegisterFormValues } from './types';
-import loginStyle from '../login/styles';
-import { useNavigation } from '@react-navigation/native';
+import Input from '../../component/Input';
+import CustomButton from '../../component/Button';
+import {RegisterFormValues, SignupProps} from './types';
+import loginStyle from '../../utils/styles/login';
+import {signupValidationSchema} from '../../utils/validationSchema';
 
-const Signup: React.FC<{}> = () => {
-  const navigation = useNavigation();
-
+const Signup: React.FC<SignupProps> = ({navigation}) => {
   const initialValues: RegisterFormValues = {
     name: '',
     email: '',
     password: '',
     apikey: '',
   };
-  let addUser = async (values: any) => {
+  const addUser = async (values: any) => {
+    console.log('val', values);
     try {
       await AsyncStorage.setItem('user', JSON.stringify(values));
-      navigation.navigate('Login');
+      navigation.navigate('Chat');
     } catch (error) {
       console.log(error);
     }
-
   };
-  const validationSchema = Yup.object().shape({
-    name: Yup.string().label('name').required('Enter User Name'),
-    email: Yup.string()
-      .label('email')
-      .email('Enter a valid Email')
-      .required('Enter Email'),
-    password: Yup.string()
-      .min(8, ({ min }) => `Password must be at least ${min} characters`)
-      .label('password')
-      .required('Enter password'),
-    apikey: Yup.string().label('apikey').required('Enter an api key'),
-  });
 
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={validationSchema}
+      validationSchema={signupValidationSchema}
       onSubmit={values => {
         addUser(values);
       }}>

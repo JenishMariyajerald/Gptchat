@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
-import { ButtonProps } from './types';
+import {StyleSheet, TouchableOpacity, View, Text} from 'react-native';
+import {ButtonProps} from './types';
 
-const CustomButton: React.FC<ButtonProps> = ({ onPress, title, disabled }) => {
+const CustomButton: React.FC<ButtonProps> = ({onPress, title, disabled}) => {
   return (
     <TouchableOpacity
       disabled={disabled}
